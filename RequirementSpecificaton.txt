@@ -1,0 +1,9 @@
+*** Uptime Monitoring API
+
+* Start the API server, which will accept incoming request(GET, POST, PUT, DELETE)
+* Create, Edit, Delete User
+* Token basen authentication
+* Logout Machanism
+* set links & Up/Down
+* Edit/Delete links & rate limit. 
+* Check up/down time 
