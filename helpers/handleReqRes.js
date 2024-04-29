@@ -41,17 +41,6 @@ handler.handleReqRes = (req, res) => {
     // handle routing
     const chosenHandler = routes[trimmedPath] ? routes[trimmedPath] : notFoundHandler;
 
-    chosenHandler(requestProperties, (statusCode, payload) => {
-        statusCode = typeof statusCode === 'number' ? statusCode : 500;
-        payload = typeof payload === 'object' ? payload : {};
-
-        const payloadString = JSON.stringify(payload);
-
-        // return the final response
-        res.writeHead(statusCode); // setting the status code of response.
-        res.end(payloadString);
-    });
-
     // decode the body of request url.
     req.on('data', (buffer) => {
         realData += decoder.write(buffer);
@@ -59,7 +48,18 @@ handler.handleReqRes = (req, res) => {
 
     req.on('end', () => {
         realData += decoder.end();
-        console.log(realData);
+
+        // choose the proper handler
+        chosenHandler(requestProperties, (statusCode, payload) => {
+            statusCode = typeof statusCode === 'number' ? statusCode : 500;
+            payload = typeof payload === 'object' ? payload : {};
+
+            const payloadString = JSON.stringify(payload);
+
+            // return the final response
+            res.writeHead(statusCode); // setting the status code of response.
+            res.end(payloadString);
+        });
 
         // response handle
         res.end('hello server');
