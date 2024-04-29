@@ -17,8 +17,8 @@ const data = require('./lib/data');
 const app = {};
 
 // testing file system
-data.create('test', 'newFile', { name: 'Bangladesh', Language: 'Bangla' }, (err) => {
-    console.log('error was', err);
+data.delete('test', 'newFile', (err) => {
+    console.log(err);
 });
 
 // create server
