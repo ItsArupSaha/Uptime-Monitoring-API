@@ -1,10 +1,9 @@
 /*
- * Title: Handle Request Response
- * Description: Handle Request Response
- * Author: Arup Saha
- * Date: 24/04/2024
- *
- */
+ Title: Handle Request Response
+ Description: this is the practice version
+ Author: Arup Saha
+ Date: 24/04/24
+*/
 
 // dependencies
 const url = require('url');
@@ -15,33 +14,31 @@ const { notFoundHandler } = require('../handlers/routeHandlers/notFoundHandler')
 // module scaffolding
 const handler = {};
 
-// Handling request response
+// handling request response
 handler.handleReqRes = (req, res) => {
-    // request handling
+    // handle request
     // get the request properties
     const parsedUrl = url.parse(req.url, true);
     const path = parsedUrl.pathname;
     const trimmedPath = path.replace(/^\/|\/$/g, '');
-    const method = req.method.toLowerCase();
     const queryStringObject = parsedUrl.query;
-    const headersObject = req.headers;
+    const method = req.method.toLowerCase();
+    const headerObject = req.headers;
 
     const requestProperties = {
         parsedUrl,
         path,
         trimmedPath,
-        method,
         queryStringObject,
-        headersObject,
+        method,
+        headerObject,
     };
 
     const decoder = new StringDecoder('utf-8');
     let realData = '';
 
-    // handle routing
     const chosenHandler = routes[trimmedPath] ? routes[trimmedPath] : notFoundHandler;
 
-    // decode the body of request url.
     req.on('data', (buffer) => {
         realData += decoder.write(buffer);
     });
@@ -49,20 +46,16 @@ handler.handleReqRes = (req, res) => {
     req.on('end', () => {
         realData += decoder.end();
 
-        // choose the proper handler
         chosenHandler(requestProperties, (statusCode, payload) => {
-            statusCode = typeof statusCode === 'number' ? statusCode : 500;
+            statusCode = typeof statusCode === 'number' ? statusCode : 5000;
             payload = typeof payload === 'object' ? payload : {};
 
             const payloadString = JSON.stringify(payload);
 
-            // return the final response
-            res.writeHead(statusCode); // setting the status code of response.
+            res.setHeader('Content-Type', 'application/json');
+            res.writeHead(statusCode);
             res.end(payloadString);
         });
-
-        // response handle
-        res.end('hello server');
     });
 };
 
