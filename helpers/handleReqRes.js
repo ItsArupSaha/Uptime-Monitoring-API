@@ -10,6 +10,7 @@ const url = require('url');
 const { StringDecoder } = require('string_decoder');
 const routes = require('../routes');
 const { notFoundHandler } = require('../handlers/routeHandlers/notFoundHandler');
+const { parseJSON } = require('./utilities');
 
 // module scaffolding
 const handler = {};
@@ -35,6 +36,7 @@ handler.handleReqRes = (req, res) => {
     };
 
     const decoder = new StringDecoder('utf-8');
+    // eslint-disable-next-line no-unused-vars
     let realData = '';
 
     const chosenHandler = routes[trimmedPath] ? routes[trimmedPath] : notFoundHandler;
@@ -46,8 +48,12 @@ handler.handleReqRes = (req, res) => {
     req.on('end', () => {
         realData += decoder.end();
 
+        requestProperties.body = parseJSON(realData);
+
         chosenHandler(requestProperties, (statusCode, payload) => {
-            statusCode = typeof statusCode === 'number' ? statusCode : 5000;
+            // eslint-disable-next-line no-param-reassign
+            statusCode = typeof statusCode === 'number' ? statusCode : 500;
+            // eslint-disable-next-line no-param-reassign
             payload = typeof payload === 'object' ? payload : {};
 
             const payloadString = JSON.stringify(payload);
